@@ -15,28 +15,12 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install dependencies
-        run: |
-          pip install gradio pyinstaller
+      - name: Install PyInstaller
+        run: pip install pyinstaller
 
-      - name: Collect hidden imports and data
-        shell: python
+      - name: Build EXE
         run: |
-          import subprocess
-          result = subprocess.run(
-            ['pyinstaller', '--onefile', '--name', '客服查询工具',
-             '--add-data', 'faq.json;.',
-             '--hidden-import', 'safehttpx',
-             '--collect-all', 'safehttpx',
-             '--collect-all', 'gradio',
-             '--collect-all', 'gradio_client',
-             'app_offline.py'],
-            capture_output=True, text=True
-          )
-          print(result.stdout[-3000:] if len(result.stdout) > 3000 else result.stdout)
-          if result.returncode != 0:
-            print("STDERR:", result.stderr[-2000:])
-            exit(1)
+          pyinstaller --onefile --name "客服查询工具" --add-data "faq.json;." --console app_offline.py
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
